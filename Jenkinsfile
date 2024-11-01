@@ -1,10 +1,24 @@
 pipeline {
-    agent { dockerfile true }
+    agent any
+
+    environment {
+        COMPOSE_FILE = 'docker-compose.yml'
+    }
+
     stages {
-        stage('') {
+        stage('Build and Run with Docker Compose') {
             steps {
-                sh 'node --version'
-                sh 'svn --version'
+                script {
+                    sh 'docker-compose up -d --build'
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            script {
+                sh 'docker-compose down'
             }
         }
     }
