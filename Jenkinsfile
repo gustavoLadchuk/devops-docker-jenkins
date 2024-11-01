@@ -6,10 +6,12 @@ pipeline {
     }
 
     stages {
-        stage('Build and Run with Docker Compose') {
+        stage('Build') {
             steps {
                 script {
-                    sh 'docker-compose up -d --build'
+                    sh '''
+			docker-compose up -d --build
+			'''
                 }
             }
         }
@@ -18,7 +20,9 @@ pipeline {
     post {
         always {
             script {
-                sh 'docker-compose down'
+                sh '''
+		docker-compose down
+		'''
             }
         }
     }
