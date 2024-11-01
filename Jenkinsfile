@@ -10,7 +10,6 @@ pipeline {
             steps {
                 script {
                     sh '''
-			echo "teste"
 			docker-compose up -d --build
 			'''
                 }
