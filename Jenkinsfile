@@ -12,7 +12,6 @@ pipeline {
                     sh '''
 			docker stop $(docker ps -aq) && docker rm $(docker ps -aq)
 			docker compose up -d --build
-			curl http://localhost:5000
 			docker compose ps
 			'''
                 }

@@ -1,6 +1,5 @@
-# Código principal do Flask (app.py)
 import time
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, abort
 from flask_sqlalchemy import SQLAlchemy
 from flask_appbuilder import AppBuilder, SQLA
 from flask_appbuilder.models.sqla.interface import SQLAInterface
@@ -80,14 +79,24 @@ def listar_alunos():
     return jsonify(output)
 
 # Rota para adicionar um aluno - Método POST
-@app.route('/alunos', methods=['POST'])
-def adicionar_aluno():
-    data = request.get_json()
+@app.route('/cadastro', methods=['POST'])
+def cadastrar_aluno():
+    data = request.get_json()  # Espera os dados em formato JSON
+
+    # Verifica se os dados necessários foram fornecidos
+    if not data or 'nome' not in data or 'sobrenome' not in data or 'turma' not in data or 'disciplinas' not in data:
+        abort(400, description="Dados inválidos. Nome, sobrenome, turma e disciplinas são obrigatórios.")
+
     novo_aluno = Aluno(nome=data['nome'], sobrenome=data['sobrenome'], turma=data['turma'], disciplinas=data['disciplinas'])
-    db.session.add(novo_aluno)
-    db.session.commit()
-    logger.info(f"Aluno {data['nome']} {data['sobrenome']} adicionado com sucesso!")
-    return jsonify({'message': 'Aluno adicionado com sucesso!'}), 201
+    try:
+        db.session.add(novo_aluno)
+        db.session.commit()
+        logger.info(f"Aluno {data['nome']} {data['sobrenome']} adicionado com sucesso!")
+        return jsonify({'message': 'Aluno adicionado com sucesso!'}), 201
+    except Exception as e:
+        db.session.rollback()
+        logger.error(f"Erro ao adicionar aluno: {str(e)}")
+        return jsonify({f"Erro ao adicionar aluno: {str(e)}"}), 500
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
