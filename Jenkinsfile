@@ -10,6 +10,7 @@ pipeline {
             steps {
                 script {
                     sh '''
+			docker ps -a
 			docker compose up -d --build
 			docker compose ps
 			'''
