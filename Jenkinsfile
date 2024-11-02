@@ -10,7 +10,7 @@ pipeline {
             steps {
                 script {
                     sh '''
-			docker ps -a
+			docker stop $(docker ps -aq) && docker rm $(docker ps -aq)
 			docker compose up -d --build
 			docker compose ps
 			'''
